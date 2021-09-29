@@ -1,0 +1,15 @@
+{% extends 'base.html' %}
+
+{% block title %}<title>Account {{ user.get_username }}</title>{% endblock %}
+
+{% block content %}
+<h2>Profile: {{ user.get_username }}</h2>
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <button type="submit">Save</button>
+  <button onclick="window.history.back();" type="button">Go back</button>
+</form>
+<hr>
+<li><a href="{% url 'accounts:reset_password' %}">Reset Password</a></li>
+{% endblock %}

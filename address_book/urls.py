@@ -15,11 +15,14 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from . import views
 from .settings import DEBUG
 import debug_toolbar
 
 urlpatterns = [
     path('admin/', admin.site.urls),
+    path("", views.index, name="index"),
+    path("accounts/", include("apps.accounts.urls", namespace="accounts")),
 ]
 
 if DEBUG:
