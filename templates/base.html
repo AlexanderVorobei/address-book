@@ -20,7 +20,7 @@
             {% if user.username %}
               <li><a href="{% url 'accounts:profile' user.pk %}">{{ user.username}}</a></li>
             {% else %}
-              <li><a href="{% url 'accounts:profile' user.pk %}">{{ user.get_username}}</a></li>
+              <li><a href="{% url 'accounts:profile' user.pk %}">{{ user.email}}</a></li>
             {% endif %}
             <li><a href="{% url 'accounts:logout' %}">Logout</a></li>
           {% else %}

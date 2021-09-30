@@ -15,6 +15,7 @@ Including another URLconf
 """
 from django.contrib import admin
 from django.urls import path, include
+from rest_framework_jwt.views import obtain_jwt_token
 from . import views
 from .settings import DEBUG
 import debug_toolbar
@@ -23,6 +24,8 @@ urlpatterns = [
     path('admin/', admin.site.urls),
     path("", views.index, name="index"),
     path("accounts/", include("apps.accounts.urls", namespace="accounts")),
+    path("api/v1/", include("apps.contacts.urls", namespace="contacts")),
+    path("api/v1/super-login/", obtain_jwt_token, name="super_login"),
 ]
 
 if DEBUG:

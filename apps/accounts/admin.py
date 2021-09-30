@@ -12,8 +12,9 @@ class Admin(UserAdmin):
         "is_superuser",
         "is_active",
     )
-    search_fields = ("email", "username")
+    list_display_links = ("email",)
     list_filter = ("is_staff", "is_superuser", "is_active")
+    search_fields = ("email", "username")
     fieldsets = (
         (
             None,
@@ -33,7 +34,6 @@ class Admin(UserAdmin):
             {
                 "classes": ("wide",),
                 "fields": (
-                    "username",
                     "email",
                     "password1",
                     "password2",
