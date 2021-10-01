@@ -3,7 +3,40 @@
 {% block title %}<title>Home</title>{% endblock %}
 
 {% block content %}
-<h1>Address Book</h1>
+<h2>Address Book</h2>
+{% if user.is_authenticated %}
+<section class="container">
+    <form action="{% url 'contacts:contact-list' %}" method="POST" id="create_contact">
+        <input type="hidden" name="csrfmiddlewaretoken" value="{{csrf_token}}"/>
+        <input type="hidden" name="user" value="{{user.pk}}"/>
+        <label>Add contact:<br>
+            <input type="text" name="first_name" placeholder="first_name"/>
+            <input type="text" name="last_name" placeholder="last_name"/>
+            <input type="tel" name="phone" placeholder="phone"/>
+        </label>
+        <label>Contact address:<br>
+            <input type="text" name="country" placeholder="country"/>
+            <input type="text" name="city" placeholder="city"/>
+            <input type="text" name="street" placeholder="street"/>
+            <input type="number" name="building" placeholder="building" min="1" max="1000" step="1"/>
+            <input type="number" name="floor" placeholder="floor" min="1" max="1000" step="1"/>
+        </label>
+        <label>Site:<br>
+            <input type="url" name="url" placeholder="url"/>
+        </label>
+        <hr>
+        <label>Contact Photo:
+            <input type="file" name="image" accept="image/*" />
+        </label>
+        <hr>
+        <button type="submit">Save</button>
+        <hr>
+    </form>
+</section>
+<script>
+</script>
+{% else %}
+<h5>In order to use the application, please login.</h5>
 <hr>
-<h2>Dynamic content</h2>
+{% endif %}
 {% endblock %}
