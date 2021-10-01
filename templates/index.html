@@ -160,7 +160,7 @@
              success : function (response) {
              			 var trHTML = '';
                 $.each(response, function (i, item) {
-                    trHTML += "<tr><td class='maya'>" + item.id + "</td><td>" + item.first_name + "</td><td>" + item.last_name + "</td><td>" + item.age + "</td><td>" + item.gender +  "</td><td><button class='btn btn-primary update' id ="+ item.id +" data-toggle='modal' data-target='#updateModal'>Update</button><button class='btn btn-danger delete' id ="+ item.id +">Delete</button>"
+                    trHTML += "<tr><td class='maya'>" + item.id + "</td><td>" + item.first_name + "</td><td>" + item.last_name + "</td><td>" + item.phone + "</td><td>" + item.country + item.city + "</td><td>" + item.street + "</td><td>" + item.building + "</td><td>" + item.floor + "</td><td>" + item.url + "</td><td>" + "</td><td>" +  "</td><td><button class='btn btn-primary update' id ="+ item.id +" data-toggle='modal' data-target='#updateModal'>Update</button><button class='btn btn-danger delete' id ="+ item.id +">Delete</button>"
                     "</td></tr>";
                 });
                 $('#records_table').append(trHTML);
@@ -170,11 +170,11 @@
     <script>
         $('#records_table').on('click', '.delete', function(){
                 var id = $(this).attr('id');
-                var myurl = 'http://localhost:8000/api/'+id;
+                var url = 'http://localhost:8000/api/contact/'+id+'/';
 
                 $.ajax({
                     async: true,
-                    url:myurl,
+                    url:url,
                     method:'DELETE',
                     success: function(result){
                         location.reload();
@@ -184,9 +184,9 @@
         });
         $('#records_table').on('click', '.update', function(){
                 var id = $(this).attr('id');
-                 $('input[id=Myid]').val(id);
+                 $('input[id=id]').val(id);
 
-                var myurl = 'http://localhost:8000/api/'+id;
+                var url = 'http://localhost:8000/api/v1/'+id;
                 $( "#first_name" ).change(function() {
                   $('input[name=first_name]').val($(this).val());
 
@@ -195,42 +195,72 @@
                   $('input[name=last_name]').val($(this).val());
 
                 });
-        $( "#age" ).change(function() {
-                  $('input[name=age]').val($(this).val());
+        $( "#phone" ).change(function() {
+                  $('input[name=phone]').val($(this).val());
 
                 });
-        $( "#gender" ).change(function() {
-                  $('input[name=gender]').val($(this).val());
+        $( "#country" ).change(function() {
+                  $('input[name=country]').val($(this).val());
+
+                });
+        $( "#city" ).change(function() {
+                  $('input[name=city]').val($(this).val());
+
+                });
+        $( "#street" ).change(function() {
+                  $('input[name=street]').val($(this).val());
+
+                });
+        $( "#building" ).change(function() {
+                  $('input[name=building]').val($(this).val());
+
+                });
+        $( "#floor" ).change(function() {
+                  $('input[name=floor]').val($(this).val());
+
+                });
+        $( "#url" ).change(function() {
+                  $('input[name=url]').val($(this).val());
 
                 });
 
                 $.ajax({
                     async: true,
-                    url:myurl,
+                    url:url,
                     method:'GET',
                     success: function(result){
                         $('input[name="first_name"]').val(result.first_name);
                         $('input[name="last_name"]').val(result.last_name);
-                        $('input[name="age"]').val(result.age);
-                        $('select[name="gender"]').val(result.gender);
+                        $('input[name="phone"]').val(result.phone);
+                        $('input[name="country"]').val(result.country);
+                        $('input[name="city"]').val(result.city);
+                        $('input[name="street"]').val(result.street);
+                        $('input[name="building"]').val(result.building);
+                        $('input[name="floor"]').val(result.floor);
+                        $('input[name="url"]').val(result.url);
                     }
                 });
 
         });
-
-        $('#myCreate').click(function(){
-            $("#myForm").trigger('reset');
+        $('#Create').click(function(){
+            $("#Form").trigger('reset');
         });
         $('#screate').click(function(){
             $.ajax({
                 type : 'POST',
-                url : 'http://localhost:8000/api/create/',
+                url : 'http://localhost:8000/api/v1/contact/',
                 data : {
                     '_token':$('input[name=_token]').val(),
+                    '_user':$('input[name=_user]').val()
                     'first_name':$('input[name=first_name]').val(),
                     'last_name':$('input[name=last_name]').val(),
-                    'age':$('input[name=age]').val(),
-                    'gender':$('select[name=gender]').val()
+                    'phone':$('input[name=phone]').val(),
+                    'country':$('input[name=country]').val(),
+                    'city':$('input[name=city]').val(),
+                    'street':$('input[name=street]').val(),
+                    'building':$('input[name=building]').val(),
+                    'floor':$('input[name=floor]').val(),
+                    'url':$('input[name=url]').val(),
                 },
                 success: function(data){
                    location.reload();
@@ -238,19 +268,25 @@
             })
         });
         $('#supdate').click(function(){
-            var id = $("#Myid").attr("value");
+            var id = $("#id").attr("value");
             console.log(id);
-            var myurl = 'http://localhost:8000/api/'+id+'/update/';
+            var url = 'http://localhost:8000/api/'+id+'/update/';
 
             $.ajax({
                 type : 'PUT',
-                url : myurl,
+                url : url,
                 data : {
                     '_token':$('input[name=_token]').val(),
+                    '_user':$('input[name=_user]').val()
                     'first_name':$('input[name=first_name]').val(),
                     'last_name':$('input[name=last_name]').val(),
-                    'age':$('input[name=age]').val(),
-                    'gender':$('select[name=gender]').val()
+                    'phone':$('input[name=phone]').val(),
+                    'country':$('input[name=country]').val(),
+                    'city':$('input[name=city]').val(),
+                    'street':$('input[name=street]').val(),
+                    'building':$('input[name=building]').val(),
+                    'floor':$('input[name=floor]').val(),
+                    'url':$('input[name=url]').val(),
                 },
                 success: function(data){
                    location.reload();
@@ -259,7 +295,6 @@
             })
         });
     </script>
-
 {% else %}
 <h5>In order to use the application, please login.</h5>
 <hr>
