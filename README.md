@@ -9,5 +9,14 @@
 ## Setup
 ### Use Make command
 ```
-$ make all
+$ make
+```
+```
+$ make setup
+```
+```
+$ make db
+```
+```
+$ make run
 ```
