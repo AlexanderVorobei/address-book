@@ -1,304 +1,1 @@
-{% extends "base.html" %}
-
-{% block title %}<title>Home</title>{% endblock %}
-
-{% block content %}
-{% if user.is_authenticated %}
-<div class="container">
-
-    <h2>Address Book</h2>
-    <div class="text-left">
-        <button type="button" class="btn btn-success" data-toggle="modal" id="create" data-target="#createModal">Create contact</button>
-    </div>
-
-    <table class="table" id="records_table" border='1'>
-        <tr class="bg-primary">
-            <th>Id</th>
-	        <th>First Name</th>
-	        <th id="maya">Last Name</th>
-	        <th>Phone</th>
-	        <th>Country</th>
-	        <th>City</th>
-            <th>Street</th>
-	        <th>Building</th>
-	        <th>Floor</th>
-	        <th>URL</th>
-	    </tr>
-		</table>
-                    <!--  Create Modal -->
-            <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="ModalLabel" aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="ModalLabel">Create Contacts</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                    <form id="form">{% csrf_token %}
-                      <div class="form-group">
-                        <label for="first_name">First Name</label>
-                        <input type="text" class="form-control"  name="first_name" placeholder="first name here..">
-                      </div>
-                      <div class="form-group">
-                        <label for="last_name">Last Name </label>
-                        <input type="text" class="form-control"  name="last_name" placeholder="last name here...">
-                      </div>
-                      <div class="form-group">
-                        <label for="phone">Phone Number </label>
-                        <input type="tel" class="form-control"  name="phone" placeholder="phone number here...">
-                      </div>
-                      <div class="form-group">
-                          <label>Contact address:<br>
-                              <input type="text" class="form-control" name="country" placeholder="country"/>
-                              <input type="text" class="form-control" name="city" placeholder="city"/>
-                              <input type="text" class="form-control" name="street" placeholder="street"/>
-                              <input type="number" class="form-control" name="building" placeholder="building" min="1" max="1000" step="1"/>
-                              <input type="number" class="form-control" name="floor" placeholder="floor" min="1" max="1000" step="1"/>
-                          </label>
-                      </div>
-                      <div class="form-group">
-                        <label for="url">Site </label>
-                        <input type="url" class="form-control"  name="url" placeholder="url here...">
-                      </div>
-                    </form>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="screate">Save</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-                    <!--  Update Modal -->
-            <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="uModalLabel" aria-hidden="true">
-              <div class="modal-dialog" role="document">
-                <div class="modal-content">
-                  <div class="modal-header">
-                    <h5 class="modal-title" id="uModalLabel">Create Contacts</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                      <span aria-hidden="true">&times;</span>
-                    </button>
-                  </div>
-                  <div class="modal-body">
-                    <form>
-                        <input type="hidden" id="id" value="">
-                      <div class="form-group">
-                        <label for="first_name">First Name</label>
-                        <input type="text" class="form-control" id="first_name" name="first_name" value="">
-                      </div>
-                      <div class="form-group">
-                        <label for="last_name">Last Name </label>
-                        <input type="text" class="form-control" id="last_name" name="last_name" value="">
-                      </div>
-                      <div class="form-group">
-                        <label for="phone">Phone Number </label>
-                        <input type="tel" class="form-control" id="phone"  name="phone" value="">
-                      </div>
-                      <div class="form-group">
-                          <label>Contact address:<br>
-                              <input type="text" class="form-control" id="country" name="country" value=""/>
-                              <input type="text" class="form-control" id="city" name="city" value=""/>
-                              <input type="text" class="form-control" id="street" name="street" value=""/>
-                              <input type="number" class="form-control" id="building" name="building" value=""/>
-                              <input type="number" class="form-control" id="floor" name="floor" value=""/>
-                          </label>
-                      </div>
-                      <div class="form-group">
-                        <label for="url">Site </label>
-                        <input type="url" class="form-control" id="url" name="url" value="">
-                      </div>
-                    </form>
-                  </div>
-                  <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="supdate">Save</button>
-                  </div>
-                </div>
-              </div>
-            </div>
-	</div>
-<script>
-// CSRF code
-    function getCookie(name) {
-        var cookieValue = null;
-        var i = 0;
-        if (document.cookie && document.cookie !== '') {
-            var cookies = document.cookie.split(';');
-            for (i; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) === (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    var csrftoken = getCookie('csrftoken');
-
-    function csrfSafeMethod(method) {
-        // these HTTP methods do not require CSRF protection
-        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));
-    }
-
-    // Use csrf token while doing post request, this will prevent 500 Server Error
-    $.ajaxSetup({
-        crossDomain: false, // obviates need for sameOrigin test
-        beforeSend: function(xhr, settings) {
-            if (!csrfSafeMethod(settings.type)) {
-                xhr.setRequestHeader("X-CSRFToken", csrftoken);
-            }
-        }
-    });
-
-</script>
-    <script type="text/javascript">
-    $.ajax({
-             url : "http://localhost:8000/api/v1/contact/",
-             dataType: "json",
-             success : function (response) {
-             			 var trHTML = '';
-                $.each(response, function (i, item) {
-                    trHTML += "<tr><td class='maya'>" + item.id + "</td><td>" + item.first_name + "</td><td>" + item.last_name + "</td><td>" + item.phone + "</td><td>" + item.country + item.city + "</td><td>" + item.street + "</td><td>" + item.building + "</td><td>" + item.floor + "</td><td>" + item.url + "</td><td>" + "</td><td>" +  "</td><td><button class='update' id ="+ item.id +" data-toggle='modal' data-target='#updateModal'>Update</button><button class='delete' id ="+ item.id +">Delete</button>"
-                    "</td></tr>";
-                });
-                $('#records_table').append(trHTML);
-                    }
-            });
-    </script>
-    <script>
-        $('#records_table').on('click', '.delete', function(){
-                var id = $(this).attr('id');
-                var url = 'http://localhost:8000/api/contact/'+id+'/';
-
-                $.ajax({
-                    async: true,
-                    url:url,
-                    method:'DELETE',
-                    success: function(result){
-                        location.reload();
-                    }
-                });
-
-        });
-        $('#records_table').on('click', '.update', function(){
-                var id = $(this).attr('id');
-                 $('input[id=id]').val(id);
-
-                var url = 'http://localhost:8000/api/v1/contact/'+id+'/';
-                $( "#first_name" ).change(function() {
-                  $('input[name=first_name]').val($(this).val());
-
-                });
-        $( "#last_name" ).change(function() {
-                  $('input[name=last_name]').val($(this).val());
-
-                });
-        $( "#phone" ).change(function() {
-                  $('input[name=phone]').val($(this).val());
-
-                });
-        $( "#country" ).change(function() {
-                  $('input[name=country]').val($(this).val());
-
-                });
-        $( "#city" ).change(function() {
-                  $('input[name=city]').val($(this).val());
-
-                });
-        $( "#street" ).change(function() {
-                  $('input[name=street]').val($(this).val());
-
-                });
-        $( "#building" ).change(function() {
-                  $('input[name=building]').val($(this).val());
-
-                });
-        $( "#floor" ).change(function() {
-                  $('input[name=floor]').val($(this).val());
-
-                });
-        $( "#url" ).change(function() {
-                  $('input[name=url]').val($(this).val());
-
-                });
-
-                $.ajax({
-                    async: true,
-                    url:url,
-                    method:'GET',
-                    success: function(result){
-                        $('input[name="first_name"]').val(result.first_name);
-                        $('input[name="last_name"]').val(result.last_name);
-                        $('input[name="phone"]').val(result.phone);
-                        $('input[name="country"]').val(result.country);
-                        $('input[name="city"]').val(result.city);
-                        $('input[name="street"]').val(result.street);
-                        $('input[name="building"]').val(result.building);
-                        $('input[name="floor"]').val(result.floor);
-                        $('input[name="url"]').val(result.url);
-                    }
-                });
-
-        });
-        $('#Create').click(function(){
-            $("#Form").trigger('reset');
-        });
-        $('#screate').click(function(){
-            $.ajax({
-                type : 'POST',
-                url : 'http://localhost:8000/api/v1/contact/',
-                data : {
-                    '_token':$('input[name=_token]').val(),
-                    '_user':$('input[name=_user]').val()
-                    'first_name':$('input[name=first_name]').val(),
-                    'last_name':$('input[name=last_name]').val(),
-                    'phone':$('input[name=phone]').val(),
-                    'country':$('input[name=country]').val(),
-                    'city':$('input[name=city]').val(),
-                    'street':$('input[name=street]').val(),
-                    'building':$('input[name=building]').val(),
-                    'floor':$('input[name=floor]').val(),
-                    'url':$('input[name=url]').val(),
-                },
-                success: function(data){
-                   location.reload();
-                }
-            })
-        });
-        $('#supdate').click(function(){
-            var id = $("#id").attr("value");
-            console.log(id);
-            var url = 'http://localhost:8000/api/'+id+'/update/';
-
-            $.ajax({
-                type : 'PUT',
-                url : url,
-                data : {
-                    '_token':$('input[name=_token]').val(),
-                    '_user':$('input[name=_user]').val()
-                    'first_name':$('input[name=first_name]').val(),
-                    'last_name':$('input[name=last_name]').val(),
-                    'phone':$('input[name=phone]').val(),
-                    'country':$('input[name=country]').val(),
-                    'city':$('input[name=city]').val(),
-                    'street':$('input[name=street]').val(),
-                    'building':$('input[name=building]').val(),
-                    'floor':$('input[name=floor]').val(),
-                    'url':$('input[name=url]').val(),
-                },
-                success: function(data){
-                   location.reload();
-
-                },
-            })
-        });
-    </script>
-{% else %}
-<h5>In order to use the application, please login.</h5>
-<hr>
-{% endif %}
-{% endblock %}
+{% extends "base.html" %}{% load rest_framework %}{% block title %}<title>Home</title>{% endblock %}{% block content %}{% if user.is_authenticated %}<div class="container">    <h2>Address Book</h2>    <div class="text-left">        <button type="button" data-toggle="modal" id="create" data-target="#createModal">Create contact</button>        <hr>    </div>    <table class="table" id="contacts_table" border='2'>        <tr>            <th>Id</th>	        <th>First Name</th>	        <th id="maya">Last Name</th>	        <th>Phone</th>	        <th>Address</th>	        <th>URL</th>            <th>Action</th>	    </tr>    </table>                    <!--  Create Modal -->    <div class="modal fade" id="createModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">        <div class="modal-dialog" role="document">            <div class="modal-content">                <div class="modal-header">                    <h5 class="modal-title" id="exampleModalLabel">Create Contacts</h5>                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">                        <span aria-hidden="true">&times;</span>                    </button>                </div>                <div class="modal-body">                    <form id="create_form">{% csrf_token %}                        <div class="form-group">                            <label for="first_name">First Name: </label>                            <input type="text" class="form-control"  name="first_name" placeholder="first name here..">                        </div>                        <div class="form-group">                            <label for="last_name">Last Name: </label>                            <input type="text" class="form-control"  name="last_name" placeholder="last name here...">                        </div>                        <div class="form-group">                            <label for="phone">Phone Number </label>                            <input type="tel" class="form-control"  name="phone" placeholder="phone number here...">                        </div>                        <div class="form-group">                            <label>Contact address: <br>                                <input type="text" class="form-control" name="country" placeholder="country">                                <input type="text" class="form-control" name="city" placeholder="city">                                <input type="text" class="form-control" name="street" placeholder="street">                                <input type="number" class="form-control" name="building" placeholder="building" min="1" max="1000" step="1">                                <input type="number" class="form-control" name="floor" placeholder="floor" min="1" max="1000" step="1">                            </label>                        </div>                        <div class="form-group">                            <label for="url">Site </label>                            <input type="url" class="form-control"  name="url" placeholder="url here...">                        </div>                    </form>                </div>                <div class="modal-footer">                    <button type="button" data-dismiss="modal">Close</button>                    <button type="button" id="screate">Save</button>                </div>            </div>        </div>    </div>                    <!--  Update Modal -->    <div class="modal fade" id="updateModal" tabindex="-1" role="dialog" aria-labelledby="modalLabel" aria-hidden="true">        <div class="modal-dialog" role="document">            <div class="modal-content">                <div class="modal-header">                    <h5 class="modal-title" id="modalLabel">Update Contacts</h5>                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">                      <span aria-hidden="true">&times;</span>                    </button>                </div>                    <div class="modal-body">                        <form>                            <input type="hidden" id="contact_id" value="">                            <div class="form-group">                                <label for="first_name">First Name </label>                                <input type="text" class="form-control" id="first_name" name="first_name" value="">                            </div>                            <div class="form-group">                                <label for="last_name">Last Name </label>                                <input type="text" class="form-control" id="last_name" name="last_name" value="">                            </div>                            <div class="form-group">                                <label for="phone">Phone Number </label>                                <input type="tel" class="form-control" id="phone"  name="phone" value="">                            </div>                            <div class="form-group">                                <label>Contact address:<br>                                    <input type="text" class="form-control" id="country" name="country" value="">                                    <input type="text" class="form-control" id="city" name="city" value="">                                    <input type="text" class="form-control" id="street" name="street" value="">                                    <input type="number" class="form-control" id="building" name="building" value="">                                    <input type="number" class="form-control" id="floor" name="floor" value="">                                </label>                            </div>                            <div class="form-group">                                <label for="url">Site </label>                                <input type="url" class="form-control" id="url" name="url" value="">                            </div>                        </form>                    </div>                    <div class="modal-footer">                        <button type="button" data-dismiss="modal">Close</button>                        <button type="button" id="supdate">Save</button>                    </div>                </div>            </div>        </div>	</div><script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script><script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script><script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script><script>// CSRF code    function getCookie(name) {        var cookieValue = null;        var i = 0;        if (document.cookie && document.cookie !== '') {            var cookies = document.cookie.split(';');            for (i; i < cookies.length; i++) {                var cookie = jQuery.trim(cookies[i]);                // Does this cookie string begin with the name we want?                if (cookie.substring(0, name.length + 1) === (name + '=')) {                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));                    break;                }            }        }        return cookieValue;    }    var csrftoken = getCookie('csrftoken');    function csrfSafeMethod(method) {        // these HTTP methods do not require CSRF protection        return (/^(GET|HEAD|OPTIONS|TRACE)$/.test(method));    }    // Use csrf token while doing post request, this will prevent 500 Server Error    $.ajaxSetup({        crossDomain: false, // obviates need for sameOrigin test        beforeSend: function(xhr, settings) {            if (!csrfSafeMethod(settings.type)) {                xhr.setRequestHeader("X-CSRFToken", csrftoken);            }        }    });</script><script type="text/javascript">    $.ajax({        url: "http://localhost:8000/api/v1/contact/",        dataType: "json",        success: function (response) {             			 var trHTML = '';            $.each(response, function (i, item) {                trHTML += "<tr><td class='maya'>" + item.id + "</td><td>" + item.first_name + "</td><td>" + item.last_name + "</td><td>" + item.phone + "</td><td>" + item.country + " " + item.city + " " + item.street + " " + item.building + " " + item.floor + "</td><td>" + item.url + "</td><td><button id ="+ item.id +" data-toggle='modal' data-target='#updateModal'>Update</button><button class ='delete' id ="+ item.id +">Delete</button>"                "</td></tr>";            });            $('#contacts_table').append(trHTML);        }    });</script><script>    $('#contacts_table').on('click', '.delete', function(){        var id = $(this).attr('id');        var delete_url = 'http://localhost:8000/api/v1/contact/'+id;        $.ajax({            async: true,            url: delete_url,            method:'DELETE',            success: function(result){                location.reload();            }        });    });    $('#contacts_table').on('click', '.update', function(){        var id = $(this).attr('id');        $('input[id=id]').val(id);        var update_url = 'http://localhost:8000/api/v1/contact/'+id;        $( "#first_name" ).change(function() {            $('input[name=first_name]').val($(this).val());            });        $( "#last_name" ).change(function() {            $('input[name=last_name]').val($(this).val());            });        $( "#phone" ).change(function() {            $('input[name=phone]').val($(this).val());            });        $( "#country" ).change(function() {            $('input[name=country]').val($(this).val());            });        $( "#city" ).change(function() {            $('input[name=city]').val($(this).val());            });        $( "#street" ).change(function() {            $('input[name=street]').val($(this).val());            });        $( "#building" ).change(function() {            $('input[name=building]').val($(this).val());            });        $( "#floor" ).change(function() {            $('input[name=floor]').val($(this).val());            });        $( "#url" ).change(function() {            $('input[name=url]').val($(this).val());            });        $.ajax({            async: true,            url: update_url,            method: 'GET',            success: function(result){                $('input[name="first_name"]').val(result.first_name);                $('input[name="last_name"]').val(result.last_name);                $('input[name="phone"]').val(result.phone);                $('input[name="country"]').val(result.country);                $('input[name="city"]').val(result.city);                $('input[name="street"]').val(result.street);                $('input[name="building"]').val(result.building);                $('input[name="floor"]').val(result.floor);                $('input[name="url"]').val(result.url);            }        });    });    $('#create').click(function(){        $("#create_form").trigger('reset');    });    $('#screate').click(function(){        $.ajax({            type: 'POST',            url: 'http://localhost:8000/api/v1/contact/',            data: {                '_token':$('input[name=_token]').val(),                '_user':$('input[name=_user]').val(),                'first_name':$('input[name=first_name]').val(),                'last_name':$('input[name=last_name]').val(),                'phone':$('input[name=phone]').val(),                'country':$('input[name=country]').val(),                'city':$('input[name=city]').val(),                'street':$('input[name=street]').val(),                'building':$('input[name=building]').val(),                'floor':$('input[name=floor]').val(),                'url':$('input[name=url]').val()            },            success: function(data){               location.reload();            }        })    });    $('#supdate').click(function(){        var id = $("#id").attr("value");        console.log(id);        var update_url = 'http://localhost:8000/api/v1/contact/'+id;            $.ajax({                type: 'PUT',                url: update_url,                data: {                    '_token':$('input[name=_token]').val(),                    '_user':$('input[name=_user]').val(),                    'first_name':$('input[name=first_name]').val(),                    'last_name':$('input[name=last_name]').val(),                    'phone':$('input[name=phone]').val(),                    'country':$('input[name=country]').val(),                    'city':$('input[name=city]').val(),                    'street':$('input[name=street]').val(),                    'building':$('input[name=building]').val(),                    'floor':$('input[name=floor]').val(),                    'url':$('input[name=url]').val()                },                success: function(data){                    location.reload();                },            })        });</script>{% else %}<h5>In order to use the application, please login.</h5><hr>{% endif %}{% endblock %}

@@ -9,7 +9,10 @@ class GetUserMixin:
 
 class ContactSerializer(GetUserMixin, serializers.ModelSerializer):
     image = serializers.ImageField(
-        max_length=None, use_url=True,
+        max_length=None,
+        use_url=True,
+        allow_null=True,
+        allow_empty_file=True,
     )
 
     class Meta:
