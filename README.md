@@ -20,3 +20,8 @@ $ make db
 ```
 $ make run
 ```
+
+P.S. You can use DRF app from address:
+```
+http://localhost:8000/api/v1/contact/
+```
